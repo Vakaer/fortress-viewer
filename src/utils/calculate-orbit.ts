@@ -1,4 +1,4 @@
-const calculateOrbit = (positionStr: string, normalStr: string) => {
+const calculateOrbit = (normalStr: string) => {
 
   const normal = normalStr.trim().split('m').filter(Boolean).map(parseFloat);
 

@@ -15,11 +15,11 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
   useEffect(() => {
     if(!modelViewerRef.current) return
 
-    const modelViewer = modelViewerRef.current
-    const annotationClicked = (annotation) => {
+    const modelViewer = modelViewerRef.current;
+    const annotationClicked = (annotation: HTMLElement) => {
       const dataset = annotation.dataset;
-      modelViewer.cameraTarget = dataset.target;
-      modelViewer.cameraOrbit = dataset.orbit;
+      modelViewer.cameraTarget = dataset.target || '';
+      modelViewer.cameraOrbit = dataset.orbit || '';
       modelViewer.fieldOfView = '45deg';
     }
 
@@ -53,7 +53,7 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
         ar
       >
         {annotations.map((hotspot, index) => {
-          const orbit = calculateOrbit(hotspot.position, hotspot.normal);
+          const orbit = calculateOrbit(hotspot.normal);
           const target = hotspot.position; // Target is simply the position
 
           return (
