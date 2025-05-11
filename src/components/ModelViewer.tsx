@@ -13,6 +13,18 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
   const modelViewerRef = useRef<ModelViewerElement>(null);
 
   useEffect(() => {
+    fetch('/fortress.glb')
+      .then((res) => res.text()) // Use .text() to read any type of content
+      .then((text) => {
+        console.log('GLB file preview (first 100 chars):', text.slice(0, 100));
+      })
+      .catch((err) => {
+        console.error('Error fetching GLB file:', err);
+      });
+  }, []);
+  
+
+  useEffect(() => {
     if(!modelViewerRef.current) return
 
     const modelViewer = modelViewerRef.current;
