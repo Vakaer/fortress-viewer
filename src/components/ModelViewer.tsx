@@ -57,10 +57,8 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
         camera-target="90m 500m 200m"
         camera-orbit="67.89deg 81deg 8552m"
         field-of-view="30deg"
-        min-field-of-view="20deg"
-        max-field-of-view="45deg"
         interpolation-decay="200"
-        min-camera-orbit="auto auto 30%"
+        min-camera-orbit="auto auto 15%"
         tone-mapping="aces"
         ar
       >
@@ -75,7 +73,7 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
               slot={hotspot.slot}
               data-position={hotspot.position}
               data-normal={hotspot.normal}
-              data-orbit={orbit}  // Added orbit data
+              data-orbit={hotspot.orbit}  // Added orbit data
               data-target={target} // Added target data
               data-visibility-attribute={hotspot.visibilityAttribute}
             >
