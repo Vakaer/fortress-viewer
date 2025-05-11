@@ -1,9 +1,8 @@
-import { useEffect, useRef } from 'react';
 import '@google/model-viewer';
-import type { Annotation } from '../types/annotation';
 import type { ModelViewerElement } from '@google/model-viewer';
-import './ModelViewer.css'
-import calculateOrbit from '../utils/calculate-orbit';
+import { useEffect, useRef } from 'react';
+import type { Annotation } from '../types/annotation';
+import './ModelViewer.css';
 
 interface HeartModelViewerProps {
   annotations: Annotation[];
@@ -63,9 +62,6 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
         ar
       >
         {annotations.map((hotspot, index) => {
-          const orbit = calculateOrbit(hotspot.normal);
-          const target = hotspot.position; // Target is simply the position
-
           return (
             <button
               key={index}
@@ -73,8 +69,8 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
               slot={hotspot.slot}
               data-position={hotspot.position}
               data-normal={hotspot.normal}
-              data-orbit={hotspot.orbit}  // Added orbit data
-              data-target={target} // Added target data
+              data-orbit={hotspot.orbit}
+              data-target={hotspot.position}
               data-visibility-attribute={hotspot.visibilityAttribute}
             >
               <div className="HotspotAnnotation">{hotspot.label}</div>
