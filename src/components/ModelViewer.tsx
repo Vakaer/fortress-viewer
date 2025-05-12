@@ -31,6 +31,33 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
       modelViewer.cameraTarget = dataset.target || '';
       modelViewer.cameraOrbit = dataset.orbit || '';
       modelViewer.fieldOfView = '45deg';
+      // Speak the hotspot label in Arabic and English, only once each
+      const label = annotation.querySelector('#hotspot-label')?.textContent || '';
+      if (label) {
+        window.speechSynthesis.cancel(); // Stop any ongoing speech
+        const voices = window.speechSynthesis.getVoices();
+        // const arabicVoice = voices.find(v => v.lang.startsWith('ar'));
+        const englishVoice = voices.find(v => v.lang.startsWith('en'));
+        const utterances: SpeechSynthesisUtterance[] = [];
+        // if (arabicVoice) {
+        //   const arUtter = new window.SpeechSynthesisUtterance(label);
+        //   arUtter.voice = arabicVoice;
+        //   utterances.push(arUtter);
+        // }
+        if (englishVoice) {
+          const enUtter = new window.SpeechSynthesisUtterance(label);
+          enUtter.voice = englishVoice;
+          utterances.push(enUtter);
+        }
+        // Speak utterances in sequence
+        function speakNext(index = 0) {
+          if (index < utterances.length) {
+            utterances[index].onend = () => speakNext(index + 1);
+            window.speechSynthesis.speak(utterances[index]);
+          }
+        }
+        speakNext();
+      }
     }
 
     const handleProgress = (event: Event) => {
@@ -103,9 +130,9 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
               data-visibility-attribute={hotspot.visibilityAttribute}
             >
               <div className="HotspotAnnotation">
-                {hotspot.label}
-                <button 
-                  className="close-button" 
+                <span id='hotspot-label'>{hotspot.label}</span>
+                <button
+                  className="close-button"
                   onClick={(e) => {
                     e.stopPropagation();
                     resetCamera();
