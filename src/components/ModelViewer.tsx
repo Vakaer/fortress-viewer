@@ -1,6 +1,6 @@
 import '@google/model-viewer';
 import type { ModelViewerElement } from '@google/model-viewer';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Annotation } from '../types/annotation';
 import './ModelViewer.css';
 
@@ -10,23 +10,14 @@ interface HeartModelViewerProps {
 
 export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
   const modelViewerRef = useRef<ModelViewerElement>(null);
-
-  useEffect(() => {
-    fetch('/fortress.glb')
-      .then((res) => res.text()) // Use .text() to read any type of content
-      .then((text) => {
-        console.log('GLB file preview (first 100 chars):', text.slice(0, 100));
-      })
-      .catch((err) => {
-        console.error('Error fetching GLB file:', err);
-      });
-  }, []);
-  
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if(!modelViewerRef.current) return
 
     const modelViewer = modelViewerRef.current;
+
     const annotationClicked = (annotation: HTMLElement) => {
       const dataset = annotation.dataset;
       modelViewer.cameraTarget = dataset.target || '';
@@ -34,13 +25,38 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
       modelViewer.fieldOfView = '45deg';
     }
 
+    const handleProgress = (event: Event) => {
+      const progress = (event as CustomEvent).detail.totalProgress;
+      setLoadingProgress(Math.round(progress * 100));
+    };
+
+    const handleLoad = () => {
+      setIsLoading(false);
+    };
+
+    modelViewer.addEventListener('progress', handleProgress);
+    modelViewer.addEventListener('load', handleLoad);
+
     modelViewer.querySelectorAll('button').forEach((hotspot) => {
       hotspot.addEventListener('click', () => annotationClicked(hotspot));
     });
+
+    return () => {
+      modelViewer.removeEventListener('progress', handleProgress);
+      modelViewer.removeEventListener('load', handleLoad);
+    };
   }, [])
 
   return (
-    <div className="model-viewer-container">
+    <div className="model-viewer-container" slot='progress-bar'>
+      {isLoading && (
+        <div className="loading-overlay">
+          <div className="loading-content">
+            <div className="loading-spinner"></div>
+            <div className="loading-text"> loading.. {loadingProgress}%</div>
+          </div>
+        </div>
+      )}
       <model-viewer
         ref={modelViewerRef}
         src="/fortress.glb"
