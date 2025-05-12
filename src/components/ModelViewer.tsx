@@ -16,9 +16,9 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
   const resetCamera = () => {
     if (!modelViewerRef.current) return;
     const modelViewer = modelViewerRef.current;
-    modelViewer.cameraTarget = '90m 500m 200m';
-    modelViewer.cameraOrbit = '67.89deg 81deg 8552m';
-    modelViewer.fieldOfView = '30deg';
+    modelViewer.cameraTarget = '-0.003m 0.0722m 0.0391m';
+    modelViewer.cameraOrbit = '1871deg 76.73deg 502.5m';
+    modelViewer.fieldOfView = '24.04deg';
   };
 
   useEffect(() => {
@@ -33,6 +33,7 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
       modelViewer.fieldOfView = '45deg';
       // Speak the hotspot label in Arabic and English, only once each
       const label = annotation.querySelector('#hotspot-label')?.textContent || '';
+      console.log("🚀 ~ annotationClicked ~ label:", label)
       if (label) {
         window.speechSynthesis.cancel(); // Stop any ongoing speech
         const voices = window.speechSynthesis.getVoices();
@@ -99,7 +100,7 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
       )}
       <model-viewer
         ref={modelViewerRef}
-        src="/fortress.glb"
+        src="/fortress-v4.glb"
         camera-controls
         // auto-rotate
         shadow-intensity="1"
@@ -109,13 +110,12 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
           width: '100vw'
         }}
         touch-action="none"
-        camera-target="90m 500m 200m"
-        camera-orbit="67.89deg 81deg 8552m"
-        field-of-view="30deg"
+        camera-orbit="1871deg 76.73deg 502.5m"
+        field-of-view="24.04deg"
+        camera-target="-0.003m 0.0722m 0.0391m"
         interpolation-decay="200"
-        min-camera-orbit="auto auto 15%"
+        min-camera-orbit="auto auto 10%"
         tone-mapping="aces"
-        ar
       >
         {annotations.map((hotspot, index) => {
           return (
@@ -131,7 +131,7 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
             >
               <div className="HotspotAnnotation">
                 <span id='hotspot-label'>{hotspot.label}</span>
-                <button
+                <span
                   className="close-button"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -139,7 +139,7 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
                   }}
                 >
                   ×
-                </button>
+                </span>
               </div>
             </button>
           )
