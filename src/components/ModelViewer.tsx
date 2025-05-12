@@ -13,6 +13,14 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
+  const resetCamera = () => {
+    if (!modelViewerRef.current) return;
+    const modelViewer = modelViewerRef.current;
+    modelViewer.cameraTarget = '90m 500m 200m';
+    modelViewer.cameraOrbit = '67.89deg 81deg 8552m';
+    modelViewer.fieldOfView = '30deg';
+  };
+
   useEffect(() => {
     if(!modelViewerRef.current) return
 
@@ -37,8 +45,13 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
     modelViewer.addEventListener('progress', handleProgress);
     modelViewer.addEventListener('load', handleLoad);
 
-    modelViewer.querySelectorAll('button').forEach((hotspot) => {
-      hotspot.addEventListener('click', () => annotationClicked(hotspot));
+    modelViewer.querySelectorAll('.view-button').forEach((hotspot) => {
+      hotspot.addEventListener('click', (e) => {
+        // Only trigger if the click wasn't on the close button
+        if (!(e.target as HTMLElement).closest('.close-button')) {
+          annotationClicked(hotspot as HTMLElement);
+        }
+      });
     });
 
     return () => {
@@ -89,7 +102,18 @@ export const ModelViewer = ({ annotations }: HeartModelViewerProps) => {
               data-target={hotspot.position}
               data-visibility-attribute={hotspot.visibilityAttribute}
             >
-              <div className="HotspotAnnotation">{hotspot.label}</div>
+              <div className="HotspotAnnotation">
+                {hotspot.label}
+                <button 
+                  className="close-button" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    resetCamera();
+                  }}
+                >
+                  ×
+                </button>
+              </div>
             </button>
           )
         })}
